@@ -1,0 +1,12 @@
+{
+  "templateFullPath": "C:\\Users\\Alex.Daniel\\Documents\\Work Projects\\OPHDateStamps\\Templates\\AU Booking Sheet Friday.docx",
+  "saveArgs": {
+    "extension": "docx",
+    "baseName": "Friday",
+    "directory": "C:\\Users\\Alex.Daniel\\Documents\\Work Projects\\OPHDateStamps\\Output"
+  },
+  "placeholderArgs": [
+    {"toFind": "{{name}}", "replaceWith": "{{SMITH}}"},
+    {"toFind": "{{letterDate}}", "replaceWith": "{{2024-02-27}}"}
+  ]
+}

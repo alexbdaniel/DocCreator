@@ -50,7 +50,7 @@ namespace WordManager.Tests
 
 		
 
-			_ = await new Creator().ReplaceText(path);
+			//_ = await new Creator().ReplaceText(path);
 
 
 

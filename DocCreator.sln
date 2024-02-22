@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocCreatorApp", "DocCreatorApp\DocCreatorApp.csproj", "{BEFCA9E8-86FF-4C15-A06C-B350B335F8FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordManager", "WordManager\WordManager.csproj", "{D2526C84-B5F9-4D57-BB08-EB523BD74C3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordManager", "WordManager\WordManager.csproj", "{D2526C84-B5F9-4D57-BB08-EB523BD74C3D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02D7A4E7-1D1A-42D5-959A-C11103AB280F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordManagerTests1", "WordManagerTests1\WordManagerTests1.csproj", "{0E69AC7B-EEDA-4491-BABA-5DADA85E993B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EB44A096-C3C9-4353-85B0-1A08F2FF26E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocCreator.Presentation", "DocCreator.Presentation\DocCreator.Presentation.csproj", "{5514159F-5563-4089-97E1-A51305035D3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordManagerTests2", "WordManagerTests2\WordManagerTests2.csproj", "{075A4B9D-7772-45D3-B29D-2AD85FF2BA90}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,21 +19,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BEFCA9E8-86FF-4C15-A06C-B350B335F8FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BEFCA9E8-86FF-4C15-A06C-B350B335F8FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BEFCA9E8-86FF-4C15-A06C-B350B335F8FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BEFCA9E8-86FF-4C15-A06C-B350B335F8FE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D2526C84-B5F9-4D57-BB08-EB523BD74C3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D2526C84-B5F9-4D57-BB08-EB523BD74C3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2526C84-B5F9-4D57-BB08-EB523BD74C3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2526C84-B5F9-4D57-BB08-EB523BD74C3D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0E69AC7B-EEDA-4491-BABA-5DADA85E993B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E69AC7B-EEDA-4491-BABA-5DADA85E993B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0E69AC7B-EEDA-4491-BABA-5DADA85E993B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E69AC7B-EEDA-4491-BABA-5DADA85E993B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5514159F-5563-4089-97E1-A51305035D3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5514159F-5563-4089-97E1-A51305035D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5514159F-5563-4089-97E1-A51305035D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5514159F-5563-4089-97E1-A51305035D3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{075A4B9D-7772-45D3-B29D-2AD85FF2BA90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{075A4B9D-7772-45D3-B29D-2AD85FF2BA90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{075A4B9D-7772-45D3-B29D-2AD85FF2BA90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{075A4B9D-7772-45D3-B29D-2AD85FF2BA90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D2526C84-B5F9-4D57-BB08-EB523BD74C3D} = {02D7A4E7-1D1A-42D5-959A-C11103AB280F}
+		{5514159F-5563-4089-97E1-A51305035D3B} = {02D7A4E7-1D1A-42D5-959A-C11103AB280F}
+		{075A4B9D-7772-45D3-B29D-2AD85FF2BA90} = {EB44A096-C3C9-4353-85B0-1A08F2FF26E0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2064D859-2C43-4F77-8365-A112B599FCA0}

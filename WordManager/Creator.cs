@@ -6,173 +6,115 @@ using System.Text.RegularExpressions;
 using OpenXmlPowerTools;
 using System.Xml.Linq;
 using DocumentFormat.OpenXml;
+using Serilog;
+using System.Text.Json;
+using WordManager.Logging;
+using System.Collections.Concurrent;
 
 namespace WordManager;
 
 public class Creator
 {
-	private readonly Word.Application wordApp;
-
-	public Creator()
-	{
-		
+    public Creator()
+    {
+	
 	}
 
-	public async Task<string> CreateDocs(List<ReplacementArgs> args)
+
+
+    /// <summary>
+    /// Creates documents from a json file.
+    /// </summary>
+    /// <param name="docArgsFullPath">Full path of the file containing the arguments.</param>
+    /// <returns>A message to act on.</returns>
+    public async Task<List<DocCreationResponse>> CreateDocsHandlerAsync(string? docArgsFullPath = "")
 	{
-		var parallelOptions = new ParallelOptions()
+		var results = new List<DocCreationResponse>();
+
+		if (string.IsNullOrWhiteSpace(docArgsFullPath))
 		{
-			CancellationToken = CancellationToken.None
-		};
-
-		var cancellationToken = parallelOptions.CancellationToken;
-
-		var results = new List<string>();
-		
-
-		await Parallel.ForEachAsync(args, parallelOptions, async (i, cancellationToken) =>
+			Logger.AppendToResults(ref results, Logger.CreateResponseItem($"Valid path for the document arguments was not supplied. Full path = \"{docArgsFullPath}\""));
+			return results;
+		} 
+				
+		if (!Utilities.CheckFileExists(docArgsFullPath))
 		{
-			//var result = await ReplaceStringsWithWordAppAsync(i);
-			var result = await ReplaceXmlStringsAsync(i);
-			results.Add(result);
+			Logger.AppendToResults(ref results, Logger.CreateResponseItem($"Document arguments file does not exist. Full path = \"{docArgsFullPath}\""));
+			return results;
+		}
+	
+
+
+
+
+
+		List<DocArgs>? docArgs;
+		try
+		{
+			docArgs = await new Preparation().GetDocArgsListFromFileAsync(docArgsFullPath);
+			if (docArgs == null) 
+			{
+				Logger.AppendToResults(ref results, Logger.CreateResponseItem($"Arguments could not be deserialized; check the format. Full path = \"{docArgsFullPath}\""));
+				return results;
+			}
+		} 
+		catch 
+		{
+			Logger.AppendToResults(ref results, Logger.CreateResponseItem($"Arguments could not be deserialized; check the format. Full path = \"{docArgsFullPath}\""));
+			return results;
+		}
+
+		CreateDocs(docArgs, ref results);
+
+		return results;
+	}
+
+
+
+	private void CreateDocs(List<DocArgs> args, ref List<DocCreationResponse> results)
+	{
+		var parallelOptions = new ParallelOptions(){ CancellationToken = CancellationToken.None };
+		var parallelResults = new ConcurrentBag<DocCreationResponse>();
+
+		Parallel.ForEach(args, parallelOptions, (i) =>
+		{
+			string fullPath = Exporting.CopyFile(i.TemplateFullPath, i.SaveArgs.Directory, i.SaveArgs.BaseName, i.SaveArgs.Extension);
+
+			if (fullPath.StartsWith("[exception]"))
+			{
+				var responseItem = Logger.CreateResponseItem($"Failed to copy file. Final full path = \"{fullPath}\"", i);
+				Logger.AppendToResults(ref parallelResults, responseItem);
+			}
+			else
+			{
+				ReplaceText(fullPath, i.PlaceholderArgs);
+				var responseItem = Logger.CreateResponseItem($"Output = \"{fullPath}\"", i, success: true);
+				Logger.AppendToResults(ref parallelResults, responseItem);
+			}
 		});
-		
-		wordApp.Quit(SaveChanges: true);
 
-		return "ok";
-
-
-	}
-
-
-	public async Task<string> ReplaceStringsWithWordAppAsync(ReplacementArgs args)
-	{
-		var doc = wordApp.Documents.Open(args.DocFullPath);
-
-		foreach (var i in args.Replacements)
+		foreach(var i in parallelResults)
 		{
-			foreach (Word.Range range in doc.StoryRanges)
-			{
-				range.Find.Execute(
-					FindText: i.Key,
-					MatchCase: true,
-					MatchWholeWord: true,
-					Forward: true,
-					ReplaceWith: i.Value
-					);
-			}
-
-		}
-
-		doc.Save();
-		return "ok";
-
-
-	}
-
-	private async Task<string> ReplaceXmlStringsAsync(ReplacementArgs args)
-	{
-
-
-
-
-		using (var doc = WordprocessingDocument.Open(args.DocFullPath, isEditable: true))
-		{
-			string? docText;
-			var root = doc.MainDocumentPart.GetXDocument().Root;
-
-			var headers = root.Descendants(W.h).ToList();
-
-			foreach (var header in headers)
-			{
-
-			}
-
-
-			var content = root.Descendants(W.p).ToList();
-		
-
-			var regex = new Regex("{{dddd}}");
-		
-			
-
-			foreach (var i in args.Replacements)
-			{
-				var regexText = new Regex(i.Key);
-
-
-			}
-		}
-
-		return "ok";
-	}
-
-	private void ReplaceInHeaders(XElement element)
-	{
-		var headers = element.Elements(W.headers);
-		
-
-		foreach (var header in headers)
-		{
-
+			results.Add(i);
 		}
 	}
 
+	
 
-
-
-
-
-
-
-
-
-
-	public async Task<string> ReplaceText(string docFullPath)
+	private void ReplaceText(string docFullPath, List<PlaceholderArgs> args)
 	{
-		
-
 		using (var doc = WordprocessingDocument.Open(docFullPath, true))
 		{
-			string replaceWith = "Smith";
-			string regexPattern = "{{dddd}}";
-			var regex = new Regex(regexPattern);
-		
-			var root = doc.MainDocumentPart.GetXDocument();
-			var content = root.Descendants(W.p);
-
-
-			//var headerParts = doc.MainDocumentPart.HeaderParts;
-
-			foreach (var headerPart in doc.MainDocumentPart.HeaderParts)
+			foreach (var arg in args)
 			{
-				var headerContent = headerPart.RootElement.Descendants<DocumentFormat.OpenXml.Wordprocessing.Text>();
-				foreach (var i in headerPart.RootElement.Descendants<DocumentFormat.OpenXml.Wordprocessing.Text>())
-				{
-					
-					i.Text = i.Text.Replace(regexPattern, replaceWith);
-				}
-
+				TextReplacer.SearchAndReplace(doc, arg.ToFind, arg.ReplaceWith, matchCase: true);
 			}
-
-			//var h = doc.MainDocumentPart.HeaderParts.SelectMany(i => i.GetXDocument().Descendants(W.p));
-			//OpenXmlRegex.Replace(content, regex, replaceWith, null);
-			//OpenXmlRegex.Replace(h, regex, replaceWith, null);
-
-			TextReplacer.SearchAndReplace(doc, regexPattern, replaceWith, true);
-
 			doc.MainDocumentPart.PutXDocument();
-			
 			doc.Save();
 		}
-
-
-		return "";
-
-
-		
-
 	}
+
+	
 	
 
 }

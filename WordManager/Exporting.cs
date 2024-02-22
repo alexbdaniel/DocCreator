@@ -11,33 +11,66 @@ using WordApp = Microsoft.Office.Interop.Word;
 
 namespace WordManager;
 
-internal class Exporting
+public class Exporting
 {
-	private readonly SaveOptions args;
-
-    public Exporting(SaveOptions args)
+	/// <summary>
+	/// Copies file and appends a GUID to the base name if the file already exists in the target directory.
+	/// </summary>
+	/// <param name="source">Full path of file to copy</param>
+	/// <param name="destDirName">Directory name to save to</param>
+	/// <param name="targetBaseName">Ideal basename assuming other files do not exist</param>
+	/// <param name="extension"></param>
+	/// <returns>Full path of copied file if successful. Otherwise, returns a string starting with "[file_exists]".</returns>
+	internal static string CopyFile(string source, string destDirName, string targetBaseName, string extension)
     {
-        this.args = args;
+
+        string fullPathWithoutExtension = Path.Combine(destDirName, targetBaseName);
+        int attempts = 0;
+        
+        while (File.Exists(fullPathWithoutExtension + "." + extension) && attempts < 10)
+        {
+            attempts++;
+            fullPathWithoutExtension = Path.Combine(destDirName, $"{targetBaseName}_{Guid.NewGuid()}");
+        }
+
+        string destFullPath = fullPathWithoutExtension + "." + extension;
+
+        if ( attempts >= 10 ) return $"[exception] attempted to rename file {attempts} times: {destFullPath}";
+
+        try
+        {
+            File.Copy(source, destFullPath, overwrite: false);
+            return destFullPath;
+        } catch
+        {
+			return $"[exception] failed to copy file. Ensure the application has write access to the target directory: {destDirName}.";
+		}
+        
+
     }
 
 
-    internal void SaveAsDocx(WordApp.Document doc, bool closeAfterSave = true)
-	{
-		string fullPath = Path.Combine(args.DirectoryName, args.BaseName) + ".docx";
-		
-		doc.SaveAs2(fullPath);
-		if (closeAfterSave) doc.Close(false);
 
+
+    internal static string CreateLogFile()
+    {
+		string tempDirName = Path.GetTempPath();
+		var dt = DateTime.UtcNow.ToString("o").Replace(":", "");
+		string name = $"create_doc_log_{dt}.json";
+		string fullPath = Path.Combine(tempDirName, name);
+        string initialText = @"{""results"": }";
+
+
+        File.Create(fullPath);
+        File.WriteAllText(fullPath, initialText);
+
+        return fullPath;
 	}
 
-	internal void SaveAsPdf(WordApp.Document doc, bool openAfterExport = false, bool closeAfterExport = true)
-	{
-		string fullPath = Path.Combine(args.DirectoryName, args.BaseName) + ".pdf";
 
-		doc.ExportAsFixedFormat2(fullPath, WordApp.WdExportFormat.wdExportFormatPDF, openAfterExport, WordApp.WdExportOptimizeFor.wdExportOptimizeForOnScreen);
-		if (closeAfterExport) doc.Close(false);
-	}
+    
+    
 
-
+    
 
 }

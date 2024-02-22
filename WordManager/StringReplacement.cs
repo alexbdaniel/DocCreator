@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Packaging;
+using OpenXmlPowerTools;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,36 +10,22 @@ using WordApp = Microsoft.Office.Interop.Word;
 
 namespace WordManager;
 
-internal class StringReplacement
+internal class StringReplacer
 {
-	private readonly string toFind;
-	private readonly string replacement;
-	private readonly WordApp.Document doc;
 
-    internal StringReplacement(string toFind, string replacement, WordApp.Document doc)
-    {
-        this.toFind = toFind;
-		this.replacement = replacement;
-		this.doc = doc;
-    }
-
-    internal void ReplaceString()
+	private void ReplaceText(string docFullPath, List<PlaceholderArgs> args)
 	{
-		
-		foreach (WordApp.Range range in doc.StoryRanges)
+		using (var doc = WordprocessingDocument.Open(docFullPath, true))
 		{
-			range.Find.ClearFormatting();
-			range.Find.Text = toFind;
-			range.Find.Replacement.Text = replacement;
-
-			range.Find.Execute(Replace: WordApp.WdReplace.wdReplaceAll);
+			foreach (var arg in args)
+			{
+				TextReplacer.SearchAndReplace(doc, arg.ToFind, arg.ReplaceWith, matchCase: true);
+			}
+			doc.MainDocumentPart.PutXDocument();
+			doc.Save();
 		}
-
-		
 	}
 
-
-	
 
 
 
