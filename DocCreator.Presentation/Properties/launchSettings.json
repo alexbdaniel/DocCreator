@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DocCreator.Presentation": {
+      "commandName": "Project",
+      "commandLineArgs": "-p c:\\\\"
+    }
+  }
+}

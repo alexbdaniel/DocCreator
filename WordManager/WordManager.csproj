@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CustomConfig\**" />
+    <EmbeddedResource Remove="CustomConfig\**" />
+    <None Remove="CustomConfig\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <COMReference Include="Microsoft.Office.Interop.Word">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>7</VersionMinor>

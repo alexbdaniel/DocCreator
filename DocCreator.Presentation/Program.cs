@@ -10,6 +10,8 @@ using WordManager.Models;
 using static System.Environment;
 using DocCreator.Presentation;
 using Microsoft.Extensions.Options;
+using CommandLine;
+using DocCreator.Presentation.Configuration;
 
 namespace DocCreator.Presentation;
 
@@ -17,16 +19,15 @@ internal class Program
 {
 	static void Main(string[] args)
 	{
-
-	
-
+		var options = Parser.Default.ParseArguments<CommandLineOptions>(args);
 		
-		Console.WriteLine("Specify the full path for the document arguments:");
 
-		string? docArgsFullPath = Console.ReadLine()?.Trim();
+		string? docArgsFullPath = options.Value.DocArgsFullPath;
+
 		if (string.IsNullOrWhiteSpace(docArgsFullPath))
 		{
-			Main(args);
+			Console.WriteLine("Specify a valid path to the document arguments");
+			return;
 		}
 		else
 		{
@@ -42,22 +43,15 @@ internal class Program
 
 		Console.WriteLine(Helper.CreateLogMessage(result, logFullPath));
 
-		Main(args);
 
 
 
 
-		Console.ReadKey(true);
+
+		Console.ReadKey();
 	}
 
-	static IServiceCollection AddServices(this IServiceCollection services)
-	{
-		var configuration = new ConfigurationBuilder()
-			.AddJsonFile("appsettings.json")
-			.Build();
 
-		return services;
-	}
 
 
 }
