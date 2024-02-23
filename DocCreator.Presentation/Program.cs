@@ -19,7 +19,7 @@ internal class Program
 {
 	static void Main(string[] args)
 	{
-		var options = Parser.Default.ParseArguments<CommandLineOptions>(args).WithParsed(options =>
+		Parser.Default.ParseArguments<CommandLineOptions>(args).WithParsed(options =>
 		{
 			
 
