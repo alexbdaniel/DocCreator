@@ -2,7 +2,7 @@
   "profiles": {
     "DocCreator.Presentation": {
       "commandName": "Project",
-      "commandLineArgs": "-p c:\\\\"
+      "commandLineArgs": "-p \"C:\\Users\\Alex.Daniel\\Documents\\Work Projects\\OPHDateStamps\\Templates\\args_2024-02-22_054743704.json\""
     }
   }
 }
